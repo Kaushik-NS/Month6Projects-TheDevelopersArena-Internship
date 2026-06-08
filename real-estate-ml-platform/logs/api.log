@@ -1,0 +1,11 @@
+2026-06-08 08:33:34,792 - ERROR - Prediction failed: 'str' object has no attribute 'value'
+2026-06-08 08:36:18,100 - ERROR - Prediction failed: invalid literal for int() with base 10: np.str_('Chennai')
+2026-06-08 08:41:05,635 - ERROR - Prediction failed: invalid literal for int() with base 10: np.str_('Chennai')
+2026-06-08 09:45:55,314 - ERROR - Prediction failed: y contains previously unseen labels: 'Adyar'
+2026-06-08 10:03:22,451 - ERROR - Prediction failed: feature_names mismatch: ['beds', 'city', 'type', 'baths', 'neighborhood'] ['beds', 'baths', 'city', 'neighborhood', 'type', 'avg_size', 'total_rooms']
+training data did not have the following fields: total_rooms, avg_size
+2026-06-08 10:10:24,610 - INFO - Prediction successful | City=Chennai | Prediction=20292612.0
+2026-06-08 10:18:17,957 - ERROR - Prediction failed: y contains previously unseen labels: 'Siruseri'
+2026-06-08 10:22:40,947 - INFO - Prediction successful | City=Chennai | Prediction=7706406.0
+2026-06-08 10:25:09,315 - INFO - Prediction successful | City=Bangalore | Prediction=9006891.0
+2026-06-08 10:33:25,303 - INFO - Prediction successful | City=Chennai | Prediction=27583940.0

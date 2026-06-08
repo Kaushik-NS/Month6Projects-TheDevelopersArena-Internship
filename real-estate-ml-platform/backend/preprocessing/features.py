@@ -1,33 +1,44 @@
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import joblib
+import os
 
-# Load cleaned human-readable dataset
-df = pd.read_csv("data/processed/cleaned_data.csv")
+# Load HUMAN READABLE dataset
+df = pd.read_csv("data/raw/real_estate_dataset.csv")
 
-# Create copy for ML model
+# Create copy for encoding
 encoded_df = df.copy()
 
 encoders = {}
 
 categorical_cols = ["city", "neighborhood", "type"]
 
-# Encode categorical columns
 for col in categorical_cols:
 
     le = LabelEncoder()
 
-    encoded_df[col] = le.fit_transform(encoded_df[col])
+    encoded_df[col] = le.fit_transform(
+        encoded_df[col].astype(str)
+    )
 
     encoders[col] = le
 
+    print(f"\n{col.upper()} CLASSES:")
+    print(le.classes_[:20])
+
+# Create folders if missing
+os.makedirs("models", exist_ok=True)
+
 # Save encoders
-joblib.dump(encoders, "models/encoders.pkl")
+joblib.dump(
+    encoders,
+    "models/encoders.pkl"
+)
 
 # Save encoded dataset for ML training
 encoded_df.to_csv(
-    "data/processed/cleaned_data.csv",
+    "data/processed/model_data.csv",
     index=False
 )
 
-print("Feature engineering complete")
+print("\nFeature engineering complete")

@@ -1,5 +1,12 @@
 import streamlit as st
 import requests
+import joblib
+
+# ====================================
+# LOAD ENCODERS
+# ====================================
+
+encoders = joblib.load("models/encoders.pkl")
 
 # ====================================
 # PAGE CONFIG
@@ -14,106 +21,48 @@ st.set_page_config(
 st.title("🏠 Indian Real Estate Price Prediction")
 
 # ====================================
-# CITY MAPPING
+# CITY
 # ====================================
 
-city_map = {
-    0: "Chennai",
-    1: "Bangalore",
-    2: "Hyderabad",
-    3: "Mumbai",
-    4: "Delhi"
-}
+cities = sorted(
+    encoders["city"].classes_.tolist()
+)
 
-selected_city_name = st.selectbox(
+selected_city = st.selectbox(
     "Select City",
-    list(city_map.values())
+    cities
 )
 
-selected_city = list(city_map.keys())[
-    list(city_map.values()).index(selected_city_name)
-]
-
 # ====================================
-# NEIGHBORHOOD MAPPING
+# NEIGHBORHOOD
 # ====================================
 
-# ====================================
-# CITY-BASED NEIGHBORHOODS
-# ====================================
+neighborhoods = sorted(
+    encoders["neighborhood"].classes_.tolist()
+)
 
-city_neighborhoods = {
-
-    "Chennai": {
-        55: "Adyar",
-        27: "Velachery",
-        29: "Anna Nagar",
-        53: "T Nagar"
-    },
-
-    "Bangalore": {
-        86: "Indiranagar",
-        101: "Whitefield",
-        102: "Koramangala"
-    },
-
-    "Hyderabad": {
-        171: "Banjara Hills",
-        173: "Jubilee Hills",
-        174: "Gachibowli"
-    },
-
-    "Mumbai": {
-        191: "Andheri",
-        192: "Bandra",
-        193: "Powai"
-    },
-
-    "Delhi": {
-        210: "Saket",
-        211: "Dwarka",
-        212: "Rohini"
-    }
-}
-
-# Get neighborhoods for selected city
-selected_city_neighborhoods = city_neighborhoods[
-    selected_city_name
-]
-
-selected_neighborhood_name = st.selectbox(
+selected_neighborhood = st.selectbox(
     "Select Neighborhood",
-    list(selected_city_neighborhoods.values())
+    neighborhoods
 )
-
-selected_neighborhood = list(
-    selected_city_neighborhoods.keys()
-)[
-    list(selected_city_neighborhoods.values()).index(
-        selected_neighborhood_name
-    )
-]
 
 # ====================================
 # PROPERTY TYPE
 # ====================================
 
-type_map = {
-    0: "Apartment",
-    1: "Villa",
-    2: "House"
-}
-
-selected_type_name = st.selectbox(
-    "Property Type",
-    list(type_map.values())
-)
-
-selected_type = list(type_map.keys())[
-    list(type_map.values()).index(
-        selected_type_name
-    )
+property_types = [
+    "Apartment",
+    "Villa",
+    "House",
+    "Land",
+    "Builder Floor",
+    "Plot"
 ]
+
+selected_property_type = st.selectbox(
+    "Property Type",
+    property_types
+)
 
 # ====================================
 # BEDS
@@ -144,25 +93,49 @@ avg_size = st.select_slider(
 )
 
 # ====================================
-# PREDICT BUTTON
+# PREDICT
 # ====================================
 
 if st.button("Predict Price"):
 
-    response = requests.post(
-        "http://127.0.0.1:8000/predict",
-        params={
-            "beds": beds,
-            "baths": baths,
-            "city": selected_city,
-            "neighborhood": selected_neighborhood,
-            "type": selected_type,
-            "avg_size": avg_size
-        }
-    )
+    try:
 
-    prediction = response.json()
+        response = requests.post(
+            "http://127.0.0.1:8000/predict",
+            json={
+                "city": selected_city,
+                "neighborhood": selected_neighborhood,
+                "property_type": selected_property_type,
+                "beds": beds,
+                "baths": baths,
+                "avg_size": avg_size
+            }
+        )
 
-    st.success(
-        f"🏷️ Predicted Price: ₹ {prediction['predicted_price']:,.2f}"
-    )
+        prediction = response.json()
+
+        st.write(prediction)
+
+        if "predicted_price" in prediction:
+
+            st.success(
+                f"🏷️ Predicted Price: ₹ {prediction['predicted_price']:,.2f}"
+            )
+
+        elif "error" in prediction:
+
+            st.error(
+                prediction["error"]
+            )
+
+        else:
+
+            st.warning(
+                "Unexpected API response"
+            )
+
+    except Exception as e:
+
+        st.error(
+            f"Frontend Error: {str(e)}"
+        )

@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from enum import Enum
+from pydantic import BaseModel
 import pandas as pd
 import joblib
 import logging
 import time
+import os
 
 from backend.config import (
     MODEL_PATH,
@@ -11,7 +12,11 @@ from backend.config import (
     MODEL_VERSION
 )
 
-from backend.api.schemas import PredictionRequest
+# ====================================
+# CREATE LOGS FOLDER
+# ====================================
+
+os.makedirs("logs", exist_ok=True)
 
 # ====================================
 # LOGGING
@@ -41,28 +46,16 @@ model = joblib.load(MODEL_PATH)
 encoders = joblib.load(ENCODER_PATH)
 
 # ====================================
-# ENUMS
+# REQUEST MODEL
 # ====================================
 
-class CityEnum(str, Enum):
-    Chennai = "Chennai"
-    Bangalore = "Bangalore"
-    Hyderabad = "Hyderabad"
-    Mumbai = "Mumbai"
-    Delhi = "Delhi"
-
-
-class NeighborhoodEnum(str, Enum):
-    Adyar = "Adyar"
-    Velachery = "Velachery"
-    Anna_Nagar = "Anna Nagar"
-    T_Nagar = "T Nagar"
-
-
-class TypeEnum(str, Enum):
-    Apartment = "Apartment"
-    Villa = "Villa"
-    House = "House"
+class PredictionRequest(BaseModel):
+    city: str
+    neighborhood: str
+    property_type: str
+    beds: int
+    baths: int
+    avg_size: float
 
 # ====================================
 # ROOT
@@ -90,7 +83,6 @@ def health():
 
 @app.get("/model-info")
 def model_info():
-
     return {
         "model_name": "Indian Real Estate Price Predictor",
         "algorithm": "XGBoost",
@@ -103,7 +95,6 @@ def model_info():
 
 @app.get("/metrics")
 def metrics():
-
     return {
         "status": "running",
         "model_version": MODEL_VERSION
@@ -116,47 +107,62 @@ def metrics():
 @app.post("/predict")
 def predict(request: PredictionRequest):
 
-    city = request.city
-    neighborhood = request.neighborhood
-    property_type = request.property_type
-
-    beds = request.beds
-    baths = request.baths
-    avg_size = request.avg_size
-
-    # existing prediction code
-
     start_time = time.time()
 
     try:
 
+        city = request.city.strip()
+        neighborhood = request.neighborhood.strip()
+        property_type = request.property_type.strip()
+
+        beds = int(request.beds)
+        baths = int(request.baths)
+        avg_size = float(request.avg_size)
+
+        print("\n========== REQUEST ==========")
+        print("CITY =", city)
+        print("NEIGHBORHOOD =", neighborhood)
+        print("TYPE =", property_type)
+
         city_encoded = encoders["city"].transform(
-            [city.value]
+            [city]
         )[0]
 
         neighborhood_encoded = encoders[
             "neighborhood"
         ].transform(
-            [neighborhood.value]
+            [neighborhood]
         )[0]
 
         type_encoded = encoders["type"].transform(
-            [type.value]
-        )[0]
+        [property_type]
+)[0]
 
-        total_rooms = beds + baths
 
         data = pd.DataFrame([{
-            "beds": beds,
-            "baths": baths,
-            "city": city_encoded,
-            "neighborhood": neighborhood_encoded,
-            "type": type_encoded,
-            "avg_size": avg_size,
-            "total_rooms": total_rooms
-        }])
+    "beds": beds,
+    "city": city_encoded,
+    "type": type_encoded,
+    "baths": baths,
+    "neighborhood": neighborhood_encoded
+}])
+
+        print("\n========== MODEL INPUT ==========")
+        print(data)
+
+        print("\n========== DTYPES ==========")
+        print(data.dtypes)
 
         prediction = model.predict(data)[0]
+
+        print("\n===== MODEL INPUT =====")
+        print(data)
+
+        print("\n===== DTYPES =====")
+        print(data.dtypes)
+
+        print("\n===== VALUES =====")
+        print(data.iloc[0].to_dict())
 
         response_time = round(
             time.time() - start_time,
@@ -165,7 +171,7 @@ def predict(request: PredictionRequest):
 
         logging.info(
             f"Prediction successful | "
-            f"City={city.value} | "
+            f"City={city} | "
             f"Prediction={prediction}"
         )
 
@@ -175,6 +181,9 @@ def predict(request: PredictionRequest):
         }
 
     except Exception as e:
+
+        print("\n========== ERROR ==========")
+        print(str(e))
 
         logging.error(
             f"Prediction failed: {str(e)}"

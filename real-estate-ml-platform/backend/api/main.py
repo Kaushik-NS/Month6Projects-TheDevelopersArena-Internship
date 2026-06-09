@@ -175,6 +175,10 @@ def predict(request: PredictionRequest):
             f"Prediction={prediction}"
         )
 
+        print("\n===== RESPONSE =====")
+        print({
+        "predicted_price": float(prediction)
+})
         return {
             "predicted_price": float(prediction),
             "response_time_seconds": response_time
@@ -192,3 +196,5 @@ def predict(request: PredictionRequest):
         return {
             "error": str(e)
         }
+    
+    

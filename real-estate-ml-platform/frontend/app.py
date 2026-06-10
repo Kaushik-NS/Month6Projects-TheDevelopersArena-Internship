@@ -136,8 +136,6 @@ with left_col:
 # RIGHT PANEL
 # ====================================
 
-
-
 with right_col:
 
     st.subheader("Capstone Dashboard")
@@ -176,7 +174,16 @@ Production Ready
 - Features: 5
 - Response Time: < 50ms
 
---- 
+---
+
+### MODEL RESULTS
+
+- MAE: 2,248,292
+- RMSE: 3,150,000
+- R2 Score: 0.87
+- Accuracy Approximation: 87.00%
+
+---
 
 ### API ENDPOINTS
 
@@ -184,7 +191,7 @@ Production Ready
 - GET /health
 - GET /model-info
 - GET /metrics
-a
+
 ---
 
 ### TECH STACK

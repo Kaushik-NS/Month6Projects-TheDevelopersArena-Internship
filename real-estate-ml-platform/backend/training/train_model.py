@@ -81,6 +81,8 @@ model.fit(
     y_train
 )
 
+print("Training completed successfully")
+
 # ====================================
 # PREDICTIONS
 # ====================================
@@ -88,6 +90,8 @@ model.fit(
 predictions = model.predict(
     X_test
 )
+
+print("Predictions completed successfully")
 
 # ====================================
 # METRICS
@@ -114,55 +118,10 @@ r2 = r2_score(
 
 print("\n========== MODEL RESULTS ==========")
 
-print("MAE:", mae)
-
-print("RMSE:", rmse)
-
-print("R2 Score:", r2)
-
+print("MAE:", round(mae, 2))
+print("RMSE:", round(rmse, 2))
+print("R2 Score:", round(r2, 4))
 print("Accuracy Approximation:", round(r2 * 100, 2), "%")
-
-print("\nSTEP 1 - Starting training")
-
-model.fit(
-    X_train,
-    y_train
-)
-
-print("STEP 2 - Training completed")
-
-predictions = model.predict(
-    X_test
-)
-
-print("STEP 3 - Predictions completed")
-
-mae = mean_absolute_error(
-    y_test,
-    predictions
-)
-
-print("STEP 4 - MAE calculated")
-
-rmse = mean_squared_error(
-    y_test,
-    predictions
-) ** 0.5
-
-print("STEP 5 - RMSE calculated")
-
-r2 = r2_score(
-    y_test,
-    predictions
-)
-
-print("STEP 6 - R2 calculated")
-
-print("\n========== MODEL RESULTS ==========")
-
-print("MAE:", mae)
-print("RMSE:", rmse)
-print("R2 Score:", r2)
 
 # ====================================
 # SAVE MODEL
@@ -173,6 +132,4 @@ joblib.dump(
     "models/house_price_model.pkl"
 )
 
-print(
-    "\nModel saved successfully!"
-)
+print("\nModel saved successfully!")

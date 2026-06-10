@@ -136,10 +136,6 @@ with left_col:
 # RIGHT PANEL
 # ====================================
 
-with right_col:
-
-
-    st.subheader("Capstone Dashboard")
 
 
 with right_col:
@@ -188,7 +184,7 @@ Production Ready
 - GET /health
 - GET /model-info
 - GET /metrics
-
+a
 ---
 
 ### TECH STACK

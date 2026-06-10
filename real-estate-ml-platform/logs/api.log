@@ -82,3 +82,6 @@ training data did not have the following fields: total_rooms, avg_size
 2026-06-09 09:23:25,219 - INFO - Prediction successful | City=Chennai | Prediction=12690700.0
 2026-06-09 09:27:46,212 - INFO - Prediction successful | City=Chennai | Prediction=1115104.625
 2026-06-09 09:30:54,092 - INFO - Prediction successful | City=Chennai | Prediction=19202280.0
+2026-06-10 07:18:40,547 - INFO - Prediction successful | City=Chennai | Prediction=11677629.0
+2026-06-10 08:18:50,969 - INFO - Prediction successful | City=Chennai | Prediction=27583940.0
+2026-06-10 08:20:52,719 - INFO - Prediction successful | City=Chennai | Prediction=11615587.0

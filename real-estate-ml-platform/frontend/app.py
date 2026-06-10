@@ -138,6 +138,12 @@ with left_col:
 
 with right_col:
 
+
+    st.subheader("Capstone Dashboard")
+
+
+with right_col:
+
     st.subheader("Capstone Dashboard")
 
     c1, c2 = st.columns(2)
@@ -174,7 +180,7 @@ Production Ready
 - Features: 5
 - Response Time: < 50ms
 
----
+--- 
 
 ### API ENDPOINTS
 
